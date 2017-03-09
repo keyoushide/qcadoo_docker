@@ -1,0 +1,34 @@
+#!/bin/bash
+# install qcadoo
+
+docker stop storage0
+docker stop tracker0
+docker rm storage0
+docker rm tracker0
+
+DISK_BASEPATH="/media/jwang/mypassport0"
+CONF_BASEPATH="/home/jwang/Install/fastdfs"
+
+# Tracker
+TRACKER0_FASTDFS_BASE_PATH="$DISK_BASEPATH/tracker0"
+TRACKER0_CONF="$CONF_BASEPATH/fdfsconf/tracker.conf"
+docker run -it --name tracker0 --net host -p 22122:22122 -d -v $TRACKER0_FASTDFS_BASE_PATH:/data -v $TRACKER0_CONF:/etc/fdfs/tracker.conf lionheart/fastdfs-tracker
+
+echo "sleep 5s for wating tracker work normally."
+#sleep 5s
+
+# Storage 0
+STORAGE0_LOG_FASTDFS_BASE_PATH="$DISK_BASEPATH/storage0/log"
+STORAGE0_DATA_FASTDFS_BASE_PATH="$DISK_BASEPATH/storage0/data"
+STORAGE0_NGINX_LOG="$DISK_BASEPATH/storage0/nginx_log"
+STORAGE0_NGINX_CONF="$CONF_BASEPATH/nginxconf"
+STORAGE0_CONF="$CONF_BASEPATH/fdfsconf"
+docker run -it --name storage0 -p 23000:23000 -p 8889:8889 -v $STORAGE0_LOG_FASTDFS_BASE_PATH:/data -v $STORAGE0_DATA_FASTDFS_BASE_PATH:/mnt -v $STORAGE0_NGINX_LOG:/usr/local/nginx/logs -v $STORAGE0_NGINX_CONF:/usr/local/nginx/conf -v $STORAGE0_CONF:/etc/fdfs lionheart/fastdfs-storage
+
+# Storage 1
+STORAGE1_LOG_FASTDFS_BASE_PATH="$DISK_BASEPATH/storage1/log"
+STORAGE1_DATA_FASTDFS_BASE_PATH="$DISK_BASEPATH/storage1/data"
+STORAGE1_NGINX_LOG="$DISK_BASEPATH/storage1/nginx_log"
+STORAGE1_NGINX_CONF="$CONF_BASEPATH/nginxconf"
+STORAGE1_CONF="$CONF_BASEPATH/fdfsconf1"
+#docker run -it --name storage1 -p 23001:23000 -p 8890:8889 -v $STORAGE1_LOG_FASTDFS_BASE_PATH:/data -v $STORAGE1_DATA_FASTDFS_BASE_PATH:/mnt -v $STORAGE1_NGINX_LOG:/usr/local/nginx/logs -v $STORAGE1_NGINX_CONF:/usr/local/nginx/conf -v $STORAGE1_CONF:/etc/fdfs lionheart/fastdfs-storage
